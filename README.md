@@ -4,7 +4,6 @@ A simple http/https proxy that helps you bypass firewalls
 ## Dependency
 - socket
 - threading
-- time
 
 ## How to use it?
 ### For Server:
@@ -39,6 +38,7 @@ And then, run `python client.py` to start the proxy client.
 
 ### Demo Server
 Server Address: pp.pakho.xyz
+
 Server Port: 5200
 
 ### Finally
@@ -57,7 +57,6 @@ PyProxy is published under MIT License. See the LICENSE file for more.
 ## 依赖
 - socket
 - threading
-- time
 
 ## 怎样使用？
 ### 服务端:
@@ -92,6 +91,7 @@ def clientIn(client, address):
 
 ### 测试服务器
 服务器地址: pp.pakho.xyz
+
 服务器端口: 5200
 
 ### 最后
