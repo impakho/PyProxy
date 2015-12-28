@@ -1,14 +1,19 @@
-#coding=utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import socket
 import threading
+
 
 def isset(obj):
     if obj == 0: return 0
     return 1
 
+
 def getMethod(header):
     if 'CONNECT' in header[0:10]: return 1
     return 0
+
 
 def getHost(header):
     rn = '\r\n'
@@ -17,6 +22,7 @@ def getHost(header):
     hostSplit = header.split(kw)[1]
     if not rn in hostSplit: return ''
     return hostSplit.split(rn)[0]
+
 
 def getHost_IP(header):
     ip = getHost(header)
@@ -30,6 +36,7 @@ def getHost_IP(header):
     except Exception, e:
         return ''
 
+
 def getHost_Port(header):
     port = getHost(header)
     kw = ':'
@@ -38,6 +45,7 @@ def getHost_Port(header):
         return int(port.split(kw)[1])
     else:
         return 80
+
 
 def clientIn(client, address):
     succ = 1
@@ -63,14 +71,14 @@ def clientIn(client, address):
                 if '\r\n' in header and method == -1:
                     method = getMethod(header)
                     if ' http://' in header:
-                        headerReStr = 'http://'+header.split('http://')[1].split('/')[0]
-                        header = header.replace(headerReStr,'')
+                        headerReStr = 'http://' + header.split('http://')[1].split('/')[0]
+                        header = header.replace(headerReStr, '')
                 if ip == '': ip = getHost_IP(header)
                 if port == 0 and method == 0: port = getHost_Port(header)
                 if port == 0 and method == 1: port = 443
                 if '\r\nProxy-Connection: ' in header:
                     headerReStr = '\r\nProxy-Connection: '
-                    header = header.replace(headerReStr,'\r\nConnection: ')
+                    header = header.replace(headerReStr, '\r\nConnection: ')
                 if '\r\nContent-Length: ' in header and length == -1:
                     lengthSplit = header.split('\r\nContent-Length: ')[1]
                     if '\r\n' in lengthSplit: length = int(lengthSplit.split('\r\n')[0])
@@ -81,7 +89,7 @@ def clientIn(client, address):
                     try:
                         sockr.connect((ip, port))
                     except Exception, e:
-                        print 'ConnectERR: '+ip+':'+str(port)
+                        print 'ConnectERR: ' + ip + ':' + str(port)
                         succ = 0
                         break
                 else:
@@ -115,6 +123,7 @@ def clientIn(client, address):
             threadSendSSL.start()
     else:
         client.close()
+
 
 def sockrRecv(client, sockr):
     SSL = 0
@@ -150,7 +159,7 @@ def sockrRecv(client, sockr):
                 else:
                     lengthRecv = len(recv)
                 if status == 0:
-                    recv = recv.split('\r\n\r\n')[0]+'\r\n\r\n'
+                    recv = recv.split('\r\n\r\n')[0] + '\r\n\r\n'
                 elif length != -1:
                     if length > lengthRecv:
                         length -= lengthRecv
@@ -159,7 +168,7 @@ def sockrRecv(client, sockr):
                         length = 0
                 elif gzip == 1:
                     if '\r\n0\r\n\r\n' in recv:
-                        recv = recv.split('\r\n0\r\n\r\n')[0]+'\r\n0\r\n\r\n'
+                        recv = recv.split('\r\n0\r\n\r\n')[0] + '\r\n0\r\n\r\n'
                         gzip = -1
             if header == 'HTTP/1.1 200 Connection Established\r\n\r\n':
                 threadRecvSSL = threading.Thread(target=sockrRecvSSL, args=(client, sockr))
@@ -182,6 +191,7 @@ def sockrRecv(client, sockr):
         sockr.close()
         client.close()
 
+
 def sockrRecvSSL(client, sockr):
     while True:
         try:
@@ -198,6 +208,7 @@ def sockrRecvSSL(client, sockr):
             break
     sockr.close()
     client.close()
+
 
 def sockrSendSSL(client, sockr):
     while True:
@@ -216,14 +227,16 @@ def sockrSendSSL(client, sockr):
     sockr.close()
     client.close()
 
+
 def main():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('0.0.0.0', 5200))
     sock.listen(4096)
     while True:
-        client,address = sock.accept()
+        client, address = sock.accept()
         thread = threading.Thread(target=clientIn, args=(client, address))
         thread.start()
+
 
 if __name__ == '__main__':
     main()

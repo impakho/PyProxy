@@ -1,6 +1,9 @@
-#coding=utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import socket
 import threading
+
 
 def getHost_IP(host):
     ip = host
@@ -14,6 +17,7 @@ def getHost_IP(host):
     except Exception, e:
         return ''
 
+
 def getHost_Port(host):
     port = host
     kw = ':'
@@ -22,6 +26,7 @@ def getHost_Port(host):
         return int(port.split(kw)[1])
     else:
         return 80
+
 
 def clientIn(client, address):
     sockr = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -32,6 +37,7 @@ def clientIn(client, address):
         client.close()
     else:
         sockrSend(client, sockr)
+
 
 def sockrRecv(client, sockr):
     SSL = 0
@@ -67,7 +73,7 @@ def sockrRecv(client, sockr):
                 else:
                     lengthRecv = len(recv)
                 if status == 0:
-                    recv = recv.split('\r\n\r\n')[0]+'\r\n\r\n'
+                    recv = recv.split('\r\n\r\n')[0] + '\r\n\r\n'
                 elif length != -1:
                     if length > lengthRecv:
                         length -= lengthRecv
@@ -76,7 +82,7 @@ def sockrRecv(client, sockr):
                         length = 0
                 elif gzip == 1:
                     if '\r\n0\r\n\r\n' in recv:
-                        recv = recv.split('\r\n0\r\n\r\n')[0]+'\r\n0\r\n\r\n'
+                        recv = recv.split('\r\n0\r\n\r\n')[0] + '\r\n0\r\n\r\n'
                         gzip = -1
             if header == 'HTTP/1.1 200 Connection Established\r\n\r\n':
                 threadRecvSSL = threading.Thread(target=sockrRecvSSL, args=(client, sockr))
@@ -98,6 +104,7 @@ def sockrRecv(client, sockr):
     if SSL == 0:
         sockr.close()
         client.close()
+
 
 def sockrSend(client, sockr):
     succ = 1
@@ -148,6 +155,7 @@ def sockrSend(client, sockr):
         sockr.close()
         client.close()
 
+
 def sockrRecvSSL(client, sockr):
     while True:
         try:
@@ -164,6 +172,7 @@ def sockrRecvSSL(client, sockr):
             break
     sockr.close()
     client.close()
+
 
 def sockrSendSSL(client, sockr):
     while True:
@@ -182,14 +191,16 @@ def sockrSendSSL(client, sockr):
     sockr.close()
     client.close()
 
+
 def main():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('127.0.0.1', 1080))
     sock.listen(256)
     while True:
-        client,address = sock.accept()
+        client, address = sock.accept()
         thread = threading.Thread(target=clientIn, args=(client, address))
         thread.start()
+
 
 if __name__ == '__main__':
     main()
