@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import socket
 import threading
 
@@ -14,7 +15,7 @@ def getHost_IP(host):
         ip = socket.gethostbyname(ip)
         if '127.0.0.' in ip: ip = ''
         return ip
-    except Exception, e:
+    except:
         return ''
 
 
@@ -32,8 +33,8 @@ def clientIn(client, address):
     sockr = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sockr.connect(('127.0.0.1', 5200))
-    except Exception, e:
-        print 'ConnectERR: Server'
+    except:
+        print('ConnectERR: Server')
         client.close()
     else:
         sockrSend(client, sockr)
@@ -51,8 +52,8 @@ def sockrRecv(client, sockr):
         try:
             sockr.settimeout(15)
             recv = sockr.recv(256)
-        except Exception, e:
-            print 'Socket Timeout'
+        except:
+            print('Socket Timeout')
             break
         if len(recv):
             if headerOver == 0:
@@ -93,8 +94,8 @@ def sockrRecv(client, sockr):
                 length = 0
             try:
                 client.send(recv)
-            except Exception, e:
-                print 'Client Closed'
+            except:
+                print('Client Closed')
                 break
             if headerOver == 1:
                 if status == 0 or length == 0 or gzip == -1:
@@ -116,8 +117,8 @@ def sockrSend(client, sockr):
         try:
             client.settimeout(15)
             recv = client.recv(10)
-        except Exception, e:
-            print 'Client Timeout'
+        except:
+            print('Client Timeout')
             succ = 0
             break
         if len(recv):
@@ -140,8 +141,8 @@ def sockrSend(client, sockr):
                         length = 0
             try:
                 sockr.send(recv[::-1])
-            except Exception, e:
-                print 'Socket Closed'
+            except:
+                print('Socket Closed')
                 succ = 0
                 break
             if headerOver == 1:
@@ -161,12 +162,12 @@ def sockrRecvSSL(client, sockr):
         try:
             sockr.settimeout(30)
             recv = sockr.recv(256)
-        except Exception, e:
+        except:
             break
         if len(recv):
             try:
                 client.send(recv)
-            except Exception, e:
+            except:
                 break
         else:
             break
@@ -179,12 +180,12 @@ def sockrSendSSL(client, sockr):
         try:
             client.settimeout(30)
             recv = client.recv(10)
-        except Exception, e:
+        except:
             break
         if len(recv):
             try:
                 sockr.send(recv)
-            except Exception, e:
+            except:
                 break
         else:
             break
