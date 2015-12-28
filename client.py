@@ -1,7 +1,6 @@
 #coding=utf-8
 import socket
 import threading
-import time
 
 def getHost_IP(host):
     ip = host
